@@ -1,0 +1,56 @@
+services:
+  web:
+    build:
+        context: ./app
+        dockerfile: Dockerfile.prod
+    command: gunicorn GestioneCantieri.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/home/app/web/static
+      - ./app/dist:/home/app/web/dist
+      - ./media_volume:/home/app/web/documenti
+    expose:
+      - 8000
+    #ports:
+    #    - 8000:8000
+    env_file:
+        - ./.env.prod
+    depends_on:
+        - db
+  db:
+    image: postgres:17
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod.db
+
+#volumes:
+#  postgres_data:
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: gc_pgadmin_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ca.volpicelli@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: Jamimaan
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+  nginx:
+    build: ./nginx
+    container_name: GC_NGINX
+    volumes:
+      - static_volume:/home/app/web/static
+      - ./app/dist:/home/app/web/dist
+      - ./media_volume:/home/app/web/documenti
+    ports:
+      - 80:80
+    depends_on:
+      - web
+volumes:
+  pgadmin-data:
+  postgres_data:
+  static_volume:
+  dist:
+  media_volume:
