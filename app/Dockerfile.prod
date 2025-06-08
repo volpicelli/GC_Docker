@@ -48,7 +48,7 @@ RUN mkdir $APP_HOME
 RUN mkdir $APP_HOME/static
 #RUN mkdir $APP_HOME/distPollo
 #RUN mkdir $APP_HOME/html
-#RUN mkdir $APP_HOME/documenti
+RUN mkdir $APP_HOME/documenti
 WORKDIR $APP_HOME
 
 
